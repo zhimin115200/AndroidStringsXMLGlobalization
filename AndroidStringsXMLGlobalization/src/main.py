@@ -8,10 +8,12 @@ Created on 2015-12-28
 import os
 import re
 import json
+import urllib
 import urllib2
+import traceback
 import xml.dom.minidom
 
-dir='E://ABC'
+dir='E://abc'
 split='147258'
 
 def get_all_xml_files_from_dir(path):
@@ -41,11 +43,11 @@ def get_all_strings_form_xml(path):
         zhPattern = re.compile(u'[\u4e00-\u9fa5]+')
         
         if item.firstChild:
-            match = zhPattern.search(item.firstChild.nodeValue)
+#             match = zhPattern.search(item.firstChild.nodeValue)
             
-            if match:
-                data.names.append(item.getAttribute("name"))
-                data.values.append(item.firstChild.nodeValue)
+#             if match:
+            data.names.append(item.getAttribute("name"))
+            data.values.append(item.firstChild.nodeValue)
     return data
 
 def translate(word):
@@ -64,12 +66,13 @@ def translate(word):
     result=""
     if(content):
         content = json.loads(content)
-        if content['errMsg']==0:
+        if content['errNum']==0:
             result = content["retData"]["trans_result"][0]["dst"]
+            print result
     return result
 
 def set_all_strings_to_xml(path , data , result):
-    dom = xml.dom.minidom.parse(path)  
+    dom = xml.dom.minidom.parse(path)
     root = dom.documentElement
     itemlist = root.getElementsByTagName('string')
     for i in range(0, len(itemlist)):
@@ -81,27 +84,30 @@ def set_all_strings_to_xml(path , data , result):
     dom.writexml(f,encoding = 'utf-8')
 
 if __name__ == '__main__':
-    
+   
+    print '开始'
     files = get_all_xml_files_from_dir(dir)
     for file in files:
         
-        print "进度 ："+str(files.index(file)+1) +"/"+ str(len(files))
-        
-        data = get_all_strings_form_xml(file)
-        
-        word=''
-        for i in range(0,len(data.names)):
-            word=word+split+data.values[i]
+        try:
             
-        result = translate(word)
-        result=result.split(split)
-        del result[0]
-        
-        
-        
-        set_all_strings_to_xml(file ,data, result)
-        
-       
+            data = get_all_strings_form_xml(file) 
+            
+            word=''
+            for i in range(0,len(data.names)):
+                word=word+split+data.values[i] 
+            result = translate(word)
+            result=result.split(split)
+            del result[0]
+
+            set_all_strings_to_xml(file ,data, result)
+            
+        except:
+            print traceback.print_exc() 
+          
+        print "进度 ："+str(files.index(file)+1) +"/"+ str(len(files))
+    print '结束'
+
         
     
     
