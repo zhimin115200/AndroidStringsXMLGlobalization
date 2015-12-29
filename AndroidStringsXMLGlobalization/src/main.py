@@ -3,7 +3,7 @@
 '''
 Created on 2015-12-28
 
-@author: neusoft
+@author: zhimin115200
 '''
 import os
 import re
@@ -52,7 +52,7 @@ def get_all_strings_form_xml(path):
 
 def translate(word):
 
-    proxy = urllib2.ProxyHandler({'http': r'http://sunzhimin:A8@neusoft@dl-proxy.neusoft.com:8080'})
+    proxy = urllib2.ProxyHandler({'http': r'http://username:password@proxyserver:port'})
     auth = urllib2.HTTPBasicAuthHandler()
     opener = urllib2.build_opener(proxy, auth, urllib2.HTTPHandler)
     urllib2.install_opener(opener)
